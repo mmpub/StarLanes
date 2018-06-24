@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>Star Lanes</title>
+    <background file="background.png" mime-type="image/png" />
+    <pkg-ref id="mmpub.starlanes"/>
+    <welcome file="welcome.rtf" mime-type="application/rtf" />
+    <domains enable_localSystem="true" enable_anywhere="true" enable_currentUserHome="false" />
+    <options customize="never" require-scripts="false"/>
+    <volume-check>
+        <allowed-os-versions>
+            <os-version min="10.13"/>
+        </allowed-os-versions>
+    </volume-check>
+    <choices-outline>
+        <line choice="default">
+            <line choice="mmpub.starlanes" enabled="false" start_visible="false"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="mmpub.starlanes" visible="false">
+        <pkg-ref id="mmpub.starlanes"/>
+    </choice>
+    <pkg-ref id="mmpub.starlanes" version="1.0.0" onConclusion="none">StarLanesApp.pkg</pkg-ref>
+</installer-gui-script>
