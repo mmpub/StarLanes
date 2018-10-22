@@ -199,6 +199,9 @@ extension ConsoleFrontEnd: FrontEndDisplay {
 
             case let .safeCompany(company):
                 output.write("\(company.name) IS NOW SAFE. IT CANNOT BE TAKEN OVER IN A MERGE.")
+
+            case let .destroyedCompany(company):
+                output.write("\(company.name) HAS BEEN DESTROYED BY A BLACK HOLE !")
             }
             output.write("")
         }
@@ -215,6 +218,7 @@ extension ConsoleFrontEnd: FrontEndDisplay {
             output.write("MAP COLUMN COUNT: \(gameConfig.mapColumnCount)")
             output.write("MAP ROW COUNT: \(gameConfig.mapRowCount)")
             output.write("STAR COUNT: \(gameConfig.starCount)")
+            output.write("BLACK HOLE COUNT: \(gameConfig.blackHoleCount)")
             output.write("SHIPPING COMPANIES: \(gameConfig.shippingCompanyCount)")
             output.write("SAFE COMPANY SIZE: \(gameConfig.safeTokenCount)")
             output.write("MINIMUM COMPANY SIZE TO CALL GAME: \(gameConfig.endGameTokenCount)")

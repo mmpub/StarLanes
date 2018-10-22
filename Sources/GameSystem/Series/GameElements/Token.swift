@@ -10,6 +10,10 @@ import Foundation
 enum Token: Equatable, Hashable {
     /// Star token
     case star
+    /// Black Hole token
+    case blackHole
+    /// Destroyed by Black Hole token
+    case destroyed
     /// Output token
     case outpost
     /// Company token
@@ -31,6 +35,8 @@ extension Token: LosslessStringConvertible {
     var description: String {
         switch self {
         case .star: return "*"
+        case .blackHole: return "@"
+        case .destroyed: return " "
         case .outpost: return "+"
         case let .company(companyID):
             let letterA = UInt8(65)
@@ -49,6 +55,8 @@ extension Token: LosslessStringConvertible {
 
         switch description.first! {
         case "+": self = .outpost
+        case "@": self = .blackHole
+        case " ": self = .destroyed
         case "*": self = .star
         default:
             let uint8Value = description.utf8.map { UInt8($0) }.first!

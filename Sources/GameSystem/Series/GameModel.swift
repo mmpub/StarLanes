@@ -20,10 +20,12 @@ struct GameModel: Codable {
     // MARK: Game State
 
     /// Internal record of the current player index, controlled by the Magister Ludi.
-    /// This will not incement sequentially with randomized player order.
+    /// This will not increment sequentially with randomized player order.
     private(set) var currentPlayerIndex = 0
     /// The galaxy map used in the game.
     private(set) var galaxyMap: GalaxyMap
+    /// Coordinates of all black holes in the galaxy map.
+    private var blackHoleCoordinates: [Coordinate]
     /// The player models used in the game.
     /// Note: these models don't have 'name' fields because they're not user-facing VMO's.
     private(set) var players: [Player]
@@ -66,9 +68,13 @@ struct GameModel: Codable {
         companies = (0 ..< gameConfig.shippingCompanyCount).map { Company(index: $0) }
         self.dealer = dealer
         self.allCoordinates = allCoordinates
+        self.blackHoleCoordinates = self.dealer.dealCoordinates(count: gameConfig.blackHoleCount)
 
         // Deal star tokens to galaxy map
         self.dealer.dealCoordinates(count: gameConfig.starCount).forEach { self.galaxyMap[$0] = .star }
+
+        // Deal black hole tokens to galaxy map
+        self.blackHoleCoordinates.forEach { self.galaxyMap[$0] = .blackHole }
     }
 
     /// Return alphabetized list of active companies.
@@ -117,15 +123,52 @@ struct GameModel: Codable {
     /// - parameter coordinate: Coordinate to play.
     /// - returns: `PlayedCoordinateResult` value that describes the result of playing the coordinate.
     /// - seealso: `PlayedCoordinateResult` enum.
-    mutating func play(coordinate: Coordinate) -> PlayedCoordinateResult {
+    mutating func play(coordinate: Coordinate) -> [PlayedCoordinateResult] {
 
         var mergeReports = [MergeReport]()
+        var companiesDestroyedByBlackHole = [Int]()
 
         func convertOutpostToCompany(coordinate: Coordinate, companyID: Int) {
             galaxyMap[coordinate] = .company(companyID)
             for adjacentCoordinate in (coordinate.adjacentCoordinates.filter { galaxyMap[$0] == .outpost }) {
                 convertOutpostToCompany(coordinate: adjacentCoordinate, companyID: companyID)
             }
+        }
+
+        func updateBlackHoles() -> GalaxyMap {
+            var newGalaxyMap = galaxyMap
+            blackHoleCoordinates.forEach { blackHoleCoordinate in
+                // black hole swallows stars and outposts
+                let adjacenctOutposts = blackHoleCoordinate.adjacentCoordinates.filter { galaxyMap[$0] == .star || galaxyMap[$0] == .outpost }
+                adjacenctOutposts.forEach {
+                    newGalaxyMap[$0] = .destroyed
+                }
+
+                // black hole swallows companies
+                let adjacentCompanies = Set(blackHoleCoordinate.adjacentCoordinates.compactMap { galaxyMap[$0]?.companyID })
+                adjacentCompanies.forEach {
+                    var company = companies[$0]
+                    company.tokenCount = 0
+                    company.shareValue = 0
+                    company.isSafe = false
+                    company.outstandingShares = 0
+
+                    for index in players.indices {
+                        var player = players[index]
+                        player.shares[$0] = 0
+                        players[index] = player
+                    }
+
+                    for coordinate in allCoordinates {
+                        if newGalaxyMap[coordinate]?.companyID == $0 {
+                            newGalaxyMap[coordinate] = .destroyed
+                        }
+                    }
+
+                    companiesDestroyedByBlackHole.append($0)
+                }
+            }
+            return newGalaxyMap
         }
 
         func updateAllCompanyStructs() {
@@ -186,9 +229,10 @@ struct GameModel: Codable {
 
         switch adjacentCompanySet.count {
         case 0:
-            if (adjacentTokens.lazy.first { [Token.star, .outpost].contains($0) } != nil),
-                let newCompanyID = (companies.lazy.first { $0.isActive == false }?.index) {
+            if (adjacentTokens.first(where: { [Token.star, .outpost].contains($0) }) != nil),
+                let newCompanyID = (companies.first(where: { $0.isActive == false })?.index) {
                 convertOutpostToCompany(coordinate: coordinate, companyID: newCompanyID)
+                galaxyMap = updateBlackHoles()
                 updateAllCompanyStructs()
                 players[currentPlayerIndex].shares[newCompanyID] = houseRules.founderShareBonus
                 companies[newCompanyID].outstandingShares = houseRules.founderShareBonus
@@ -197,6 +241,7 @@ struct GameModel: Codable {
 
         case 1:
             convertOutpostToCompany(coordinate: coordinate, companyID: adjacentCompanySet.first!.index)
+            galaxyMap = updateBlackHoles()
             updateAllCompanyStructs()
             result = .companyExpanded(adjacentCompanySet.first!)
 
@@ -217,6 +262,7 @@ struct GameModel: Codable {
 
             // update map / companies
             convertOutpostToCompany(coordinate: coordinate, companyID: survivingCompanyID)
+            galaxyMap = updateBlackHoles()
             updateAllCompanyStructs()
 
             for index in remainderSharePlayers {
@@ -228,7 +274,7 @@ struct GameModel: Codable {
         default:break
         }
 
-        return result
+        return companiesDestroyedByBlackHole.isEmpty ? [result] : [result, .companiesDestroyed(companiesDestroyedByBlackHole)]
     }
 
     /// Calculates the dividends for the current player and updates player's cash record.

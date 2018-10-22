@@ -15,6 +15,8 @@ public enum VmoAnnouncement {
     case dividends(Int)
     /// Announcement that a company has grown large enough to become safe from merger.
     case safeCompany(VmoCompany)
+    /// Announcement that a company has been destroyed by a black hole.
+    case destroyedCompany(VmoCompany)
 }
 
 extension VmoAnnouncement {

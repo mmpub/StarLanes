@@ -15,4 +15,6 @@ enum PlayedCoordinateResult {
     case companyExpanded(Company)
     /// Companies were merged by playing a coordinate.
     case companiesMerged([MergeReport])
+    /// Companies were destroyed by a black hole after playing a coordinate.
+    case companiesDestroyed([Int])
 }

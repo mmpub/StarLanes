@@ -9,7 +9,7 @@
 /// Magister Ludi is responsible for running the game and series.
 public class MagisterLudi {
     /// Only update this when the persisted state file format changes.
-    private let starlanesVersion = "1.0"
+    private let starlanesVersion = "1.1"
     /// Front end implementation.
     private let frontEnd: FrontEnd
     /// Current state.
@@ -165,23 +165,28 @@ public class MagisterLudi {
 
                 state = .awaitingInput
                 frontEnd.inputCoordinate(input: input, playerDef: series.playerDefs[game.currentPlayerIndex], coordinateOptions: coordinateOptions) { coordinate in
-                    let playedCoordinateResult = game.model.play(coordinate: coordinate)
-                    switch playedCoordinateResult {
-                    case let .newCompany(company):
-                        playerAgents.announce(.newCompany(VmoCompany(company: company), founder:series.playerDefs[game.currentPlayerIndex].name))
-                    case let .companiesMerged(mergeReports):
-                        for mergeReport in mergeReports {
-                            for index in series.playerDefs.indices {
-                                playerAgents[index].announce(.merger(
-                                                                 byPlayer: series.playerDefs[mergeReport.mergePlayerIndex].name,
-                                                                 survivingCompany: VmoCompany(company: mergeReport.survivingCompany),
-                                                                 defunctCompany: VmoCompany(company: mergeReport.defunctCompany),
-                                                                 bonus: mergeReport.bonusesPaid[index]
-                                                               )
-                                                             )
+                    for playedCoordinateResult in game.model.play(coordinate: coordinate) {
+                        switch playedCoordinateResult {
+                        case let .newCompany(company):
+                            playerAgents.announce(.newCompany(VmoCompany(company: company), founder:series.playerDefs[game.currentPlayerIndex].name))
+                        case let .companiesMerged(mergeReports):
+                            for mergeReport in mergeReports {
+                                for index in series.playerDefs.indices {
+                                    playerAgents[index].announce(.merger(
+                                                                     byPlayer: series.playerDefs[mergeReport.mergePlayerIndex].name,
+                                                                     survivingCompany: VmoCompany(company: mergeReport.survivingCompany),
+                                                                     defunctCompany: VmoCompany(company: mergeReport.defunctCompany),
+                                                                     bonus: mergeReport.bonusesPaid[index]
+                                                                   )
+                                                                 )
+                                }
                             }
+                        case let .companiesDestroyed(companyIDs):
+                            for companyID in companyIDs {
+                                playerAgents.announce(.destroyedCompany(VmoCompany(company: Company(index: companyID))))
+                            }
+                        default: break
                         }
-                    default: break
                     }
 
                     for company in game.model.activeCompanies {

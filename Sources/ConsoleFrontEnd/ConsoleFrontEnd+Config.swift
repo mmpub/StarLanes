@@ -71,6 +71,7 @@ extension ConsoleFrontEnd: FrontEndConfig {
             let mapColumnCount       = readConfigInt(label: "MAP COLUMN COUNT", keyPath: \GameConfig.mapColumnCount)
             let mapRowCount          = readConfigInt(label: "MAP ROW COUNT", keyPath: \GameConfig.mapRowCount)
             let starCount            = readConfigInt(label: "STAR COUNT", keyPath: \GameConfig.starCount)
+            let blackHoleCount       = readConfigInt(label: "BLACK HOLE COUNT", keyPath: \GameConfig.blackHoleCount)
             let shippingCompanyCount = readConfigInt(label: "SHIPPING COMPANIES", keyPath: \GameConfig.shippingCompanyCount)
             let safeTokenCount       = readConfigInt(label: "SAFE COMPANY SIZE", keyPath: \GameConfig.safeTokenCount)
             let endGameTokenCount    = readConfigInt(label: "MINIMUM COMPANY SIZE TO CALL GAME", keyPath: \GameConfig.endGameTokenCount)
@@ -79,6 +80,7 @@ extension ConsoleFrontEnd: FrontEndConfig {
                              mapColumnCount: mapColumnCount,
                              mapRowCount: mapRowCount,
                              starCount: starCount,
+                             blackHoleCount: blackHoleCount,
                              shippingCompanyCount: shippingCompanyCount,
                              safeTokenCount: safeTokenCount,
                              endGameTokenCount: endGameTokenCount

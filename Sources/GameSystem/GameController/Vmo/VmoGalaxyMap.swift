@@ -34,6 +34,12 @@ extension VmoGalaxyMap {
                     case .star:
                         tokenName = "*"
 
+                    case .blackHole:
+                        tokenName = "@"
+
+                    case .destroyed:
+                        tokenName = " "
+
                     case .outpost:
                         tokenName = "+"
 

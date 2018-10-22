@@ -15,6 +15,8 @@ public struct GameConfig: Codable, Equatable {
     let mapRowCount: Int
     /// Number of stars on the map for each game in the series.
     let starCount: Int
+    /// Number of black holes on the map for each game in the series.
+    let blackHoleCount: Int
     /// Number of shipping companies in the series.
     let shippingCompanyCount: Int
     /// Number of company tokens on the map to declare a company "safe" from being merged into another company.
@@ -31,6 +33,7 @@ extension GameConfig {
                   mapColumnCount: 12,
                   mapRowCount: 9,
                   starCount: 8,
+                  blackHoleCount: 0,
                   shippingCompanyCount: 5,
                   safeTokenCount: 11,
                   endGameTokenCount: 41
@@ -43,6 +46,7 @@ extension GameConfig {
                    mapColumnCount: 16,
                    mapRowCount: 9,
                    starCount: 12,
+                   blackHoleCount: 0,
                    shippingCompanyCount: 10,
                    safeTokenCount: 15,
                    endGameTokenCount: 55
@@ -55,6 +59,7 @@ extension GameConfig {
                    mapColumnCount: 7,
                    mapRowCount: 5,
                    starCount: 0,
+                   blackHoleCount: 0,
                    shippingCompanyCount: 5,
                    safeTokenCount: 5,
                    endGameTokenCount: 15
@@ -67,6 +72,7 @@ extension GameConfig {
                    mapColumnCount: 20,
                    mapRowCount: 9,
                    starCount: 15,
+                   blackHoleCount: 4,
                    shippingCompanyCount: 10,
                    safeTokenCount: 65,
                    endGameTokenCount: 180
