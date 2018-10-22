@@ -28,6 +28,7 @@ When you run Star Lanes, you'll be offered instructions. If you're new to the ga
 - Companies used to split 2:1 at $3,000 share price. They no longer split, ever.
 - Instead, when a company reaches a certain size (11 in Basic, 15 in Deluxe) it becomes **safe**. Safe companies cannot be merged.
 - When any company reaches a maximum size (41 in Basic, 55 in Deluxe), or if all companies are safe, the leading player can call the game.
+- Custom game can have Black Holes (@), which destroy any companies that get too close.
 
 ## macOS: Install Star Lanes
 - Click on **Releases** tab above, and download the StarLanes.pkg file.
