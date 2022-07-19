@@ -34,7 +34,7 @@ extension ConsoleFrontEnd: FrontEndConfig {
             let min = GameConfig.min[keyPath:keyPath] as? Int ?? 0
             let max = GameConfig.max[keyPath:keyPath] as? Int ?? 0
             output.write("    ENTER \(label) (BASIC: \(basic); DELUXE: \(deluxe)) (\(min)-\(max))", terminator: "")
-            let result = ConsoleInput().readInt(output: output, min: min, max: max)
+            let result = ConsoleInput().readInt(output: output, min: min, max: max, defaultValue: nil)
             output.write()
             return result
         }
@@ -44,7 +44,7 @@ extension ConsoleFrontEnd: FrontEndConfig {
             let min          = HouseRules.min[keyPath:keyPath] as? Int ?? 0
             let max          = HouseRules.max[keyPath:keyPath] as? Int ?? 0
             output.write("    ENTER \(label) (DEFAULT: \(defaultValue)) (\(min)-\(max))", terminator: "")
-            let result = ConsoleInput().readInt(output: output, min: min, max: max)
+            let result = ConsoleInput().readInt(output: output, min: min, max: max, defaultValue: defaultValue)
             output.write()
             return result
         }
@@ -56,7 +56,7 @@ extension ConsoleFrontEnd: FrontEndConfig {
             return result == "Y"
         }
 
-        switch ConsoleInput().readInt(output: output, min: 1, max: 3) {
+        switch ConsoleInput().readInt(output: output, min: 1, max: 3, defaultValue: nil) {
         case 1:
               gameConfig = GameConfig.basic
               houseRules = HouseRules.default
@@ -131,7 +131,7 @@ extension ConsoleFrontEnd: FrontEndConfig {
             if min != max {
                 output.write()
                 output.write("HOW MANY \(type) PLAYERS (\(min)-\(max))", terminator: "")
-                playersToInput = ConsoleInput().readInt(output: output, min: min, max: max)
+                playersToInput = ConsoleInput().readInt(output: output, min: min, max: max, defaultValue: nil)
                 output.write()
             }
 

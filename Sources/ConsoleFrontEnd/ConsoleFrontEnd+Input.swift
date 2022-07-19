@@ -72,7 +72,7 @@ extension ConsoleFrontEnd: FrontEndInput {
         }
         output.write("", terminator: "\n\n")
         output.write("WHAT IS YOUR SELECTION ", terminator: "")
-        completionHandler(coordinateOptions[input.readInt(output: output, min: 1, max: coordinateOptions.count)-1])
+        completionHandler(coordinateOptions[input.readInt(output: output, min: 1, max: coordinateOptions.count, defaultValue: nil)-1])
         output.write()
     }
 
@@ -88,7 +88,7 @@ extension ConsoleFrontEnd: FrontEndInput {
             let maxAmount = cash / activeCompanies[index].shareValue
             output.write("YOUR CURRENT CASH = \(String(money: cash))")
             output.write("BUY HOW MANY SHARES OF \(activeCompanies[index].name) AT \(String(money: activeCompanies[index].shareValue)) (UP TO \(maxAmount))")
-            result[index] = input.readInt(output: output, min: 0, max: maxAmount)
+            result[index] = input.readInt(output: output, min: 0, max: maxAmount, defaultValue: nil)
             output.write()
             cash -= result[index] * activeCompanies[index].shareValue
         }

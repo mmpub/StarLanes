@@ -17,5 +17,6 @@ public protocol Input {
     /// - parameter output: Output stream to present prompt.
     /// - parameter min: Minimum acceptable input value.
     /// - parameter max: Maximum acceptable input value.
-    func readInt(output: Output, min: Int, max: Int) -> Int
+    /// - parameter defaultValue: Optional default value
+    func readInt(output: Output, min: Int, max: Int, defaultValue: Int?) -> Int
 }

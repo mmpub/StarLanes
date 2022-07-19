@@ -66,7 +66,7 @@ extension HouseRules {
         return HouseRules(
                 humanInitialCash: 10_000,
                 computerInitialCash: 10_000,
-                playerCoordinateOptionCount: 7,
+                playerCoordinateOptionCount: 9,
                 founderShareBonus: 10,
                 shareValueAdjacentStar: 1000,
                 shareValueAdjacentToken: 200,

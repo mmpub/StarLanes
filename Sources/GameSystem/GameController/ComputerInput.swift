@@ -24,7 +24,7 @@ class ComputerInput: Input {
     /// - parameters:
     ///   - output: The output stream to print the response.
     /// - returns: an integer response to the game's quantity query.
-    func readInt(output: Output, min: Int, max: Int) -> Int {
+    func readInt(output: Output, min: Int, max: Int, defaultValue: Int? = nil) -> Int {
         let result = !intInput.isEmpty ? intInput.removeFirst() : min
         output.write("\(result)")
         return result

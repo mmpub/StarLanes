@@ -28,14 +28,19 @@ struct ConsoleInput: Input {
     /// - parameter output: Output stream to present prompt.
     /// - parameter min: Minimum acceptable input value.
     /// - parameter max: Maximum acceptable input value.
-    func readInt(output: Output, min: Int, max: Int) -> Int {
+    func readInt(output: Output, min: Int, max: Int, defaultValue: Int?) -> Int {
          while true {
             output.write("? ", terminator: "")
-            if let str = readLine(),
-               let int = Int(str) {
-               if int >= min && int <= max {
-                   return int
-               }
+            if let str = readLine() {
+                if defaultValue != nil && str.isEmpty {
+                    output.write(" \(defaultValue!)")
+                    return defaultValue!
+                }
+                if let int = Int(str) {
+                   if int >= min && int <= max {
+                       return int
+                   }
+                }
             }
         }
     }
