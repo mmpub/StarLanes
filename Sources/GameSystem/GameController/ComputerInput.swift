@@ -45,7 +45,7 @@ class ComputerInput: Input {
     ///   - gameModel: Current state of the game.
     func decideCoordinateSelection(playerIndex: Int, coordinateOptions: [Coordinate], gameModel: GameModel) {
         let netWorths = coordinateOptions.map { coordinate -> Double in
-            var testGameModel = gameModel
+            var testGameModel = gameModel.clone()
             _ = testGameModel.play(coordinate: coordinate)
             _ = testGameModel.calculateDividends()
             let netWorths = testGameModel.netWorths.map { Double($0) }

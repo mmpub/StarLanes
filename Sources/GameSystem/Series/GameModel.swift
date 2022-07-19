@@ -77,6 +77,12 @@ struct GameModel: Codable {
         self.blackHoleCoordinates.forEach { self.galaxyMap[$0] = .blackHole }
     }
 
+    func clone() -> GameModel {
+        var result = self
+        result.galaxyMap = result.galaxyMap.clone()
+        return result
+    }
+
     /// Return alphabetized list of active companies.
     var activeCompanies: [Company] {
         return companies.filter { $0.isActive }
@@ -128,15 +134,17 @@ struct GameModel: Codable {
         var mergeReports = [MergeReport]()
         var companiesDestroyedByBlackHole = [Int]()
 
-        func convertOutpostToCompany(coordinate: Coordinate, companyID: Int) {
-            galaxyMap[coordinate] = .company(companyID)
-            for adjacentCoordinate in (coordinate.adjacentCoordinates.filter { galaxyMap[$0] == .outpost }) {
-                convertOutpostToCompany(coordinate: adjacentCoordinate, companyID: companyID)
+        func convertOutpostToCompany(galaxyMap: GalaxyMap, coordinate: Coordinate, companyID: Int) -> GalaxyMap {
+            var result = galaxyMap.clone()
+            result[coordinate] = .company(companyID)
+            for adjacentCoordinate in (coordinate.adjacentCoordinates.filter { result[$0] == .outpost }) {
+                result = convertOutpostToCompany(galaxyMap: result, coordinate: adjacentCoordinate, companyID: companyID)
             }
+            return result
         }
 
         func updateBlackHoles() -> GalaxyMap {
-            var newGalaxyMap = galaxyMap
+            let newGalaxyMap = galaxyMap.clone()
             blackHoleCoordinates.forEach { blackHoleCoordinate in
                 // black hole swallows stars and outposts
                 let adjacenctOutposts = blackHoleCoordinate.adjacentCoordinates.filter { galaxyMap[$0] == .star || galaxyMap[$0] == .outpost }
@@ -231,7 +239,7 @@ struct GameModel: Codable {
         case 0:
             if (adjacentTokens.first(where: { [Token.star, .outpost].contains($0) }) != nil),
                 let newCompanyID = (companies.first(where: { $0.isActive == false })?.index) {
-                convertOutpostToCompany(coordinate: coordinate, companyID: newCompanyID)
+                galaxyMap = convertOutpostToCompany(galaxyMap: galaxyMap, coordinate: coordinate, companyID: newCompanyID)
                 galaxyMap = updateBlackHoles()
                 updateAllCompanyStructs()
                 players[currentPlayerIndex].shares[newCompanyID] = houseRules.founderShareBonus
@@ -240,7 +248,7 @@ struct GameModel: Codable {
             }
 
         case 1:
-            convertOutpostToCompany(coordinate: coordinate, companyID: adjacentCompanySet.first!.index)
+            galaxyMap = convertOutpostToCompany(galaxyMap: galaxyMap, coordinate: coordinate, companyID: adjacentCompanySet.first!.index)
             galaxyMap = updateBlackHoles()
             updateAllCompanyStructs()
             result = .companyExpanded(adjacentCompanySet.first!)
@@ -261,7 +269,7 @@ struct GameModel: Codable {
             let remainderSharePlayers = mergeCompanies(survivorID: survivingCompanyID, defunctIDs: companiesToMerge)
 
             // update map / companies
-            convertOutpostToCompany(coordinate: coordinate, companyID: survivingCompanyID)
+            galaxyMap = convertOutpostToCompany(galaxyMap: galaxyMap, coordinate: coordinate, companyID: survivingCompanyID)
             galaxyMap = updateBlackHoles()
             updateAllCompanyStructs()
 

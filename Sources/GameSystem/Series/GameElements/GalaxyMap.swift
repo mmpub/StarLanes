@@ -7,7 +7,7 @@
 import Foundation
 
 /// Models the galaxy map
-struct GalaxyMap {
+final class GalaxyMap {
     /// Column count in the map
     let columnCount: Int
     /// Row count in the map
@@ -24,12 +24,21 @@ struct GalaxyMap {
         map = Array(repeating: Array(repeating: nil, count: rowCount), count: columnCount)
     }
 
+    func clone() -> GalaxyMap {
+        let result = GalaxyMap(columnCount: columnCount, rowCount: rowCount)
+        for row in 0 ..< rowCount {
+            for column in 0 ..< columnCount {
+                result.map[column][row] = map[column][row]
+            }
+        }
+        return result
+    }
+
     /// Mark up galaxy map with coordinate options.
     /// - parameter coordinateOptions: array of coordinate models.
     /// - returns: Copy of galaxy map, marked up with player's coordinate options.
     func markedUp(coordinateOptions: [Coordinate]) -> GalaxyMap {
-        var clonedGalaxyMap = GalaxyMap(columnCount: columnCount, rowCount: rowCount)
-        clonedGalaxyMap.map = map
+        let clonedGalaxyMap = clone()
 
         // Add marker tokens to map
         var markerIndex = 1
@@ -66,7 +75,7 @@ extension GalaxyMap: Codable {
         case map
     }
 
-    init(from decoder: Decoder) throws {
+    convenience init(from decoder: Decoder) throws {
         let container      = try decoder.container(keyedBy: CodingKeys.self)
         let mapColumnCount = try container.decode(Int.self, forKey: .columnCount)
         let mapRowCount    = try container.decode(Int.self, forKey: .rowCount)
